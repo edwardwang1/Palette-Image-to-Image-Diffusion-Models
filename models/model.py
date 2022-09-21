@@ -3,6 +3,7 @@ import tqdm
 from core.base_model import BaseModel
 from core.logger import LogTracker
 import copy
+
 class EMA():
     def __init__(self, beta=0.9999):
         super().__init__()

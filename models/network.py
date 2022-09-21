@@ -11,9 +11,11 @@ class Network(BaseNetwork):
         if module_name == 'sr3':
             from .sr3_modules.unet import UNet
         elif module_name == 'guided_diffusion':
-            from .guided_diffusion_modules.unet import UNet
+            #from .guided_diffusion_modules.unet import UNet
+            from .guided_diffusion_modules.unet_3d import Generator
         
-        self.denoise_fn = UNet(**unet)
+        #self.denoise_fn = UNet(**unet)
+        self.denoise_fn = Generator(**unet)
         self.beta_schedule = beta_schedule
 
     def set_loss(self, loss_fn):

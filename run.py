@@ -12,6 +12,7 @@ from models import create_model, define_network, define_loss, define_metric
 
 def main_worker(gpu, ngpus_per_node, opt):
     """  threads running on each GPU """
+    #print(opt)
     if 'local_rank' not in opt:
         opt['local_rank'] = opt['global_rank'] = gpu
     if opt['distributed']:
@@ -36,6 +37,7 @@ def main_worker(gpu, ngpus_per_node, opt):
     '''set networks and dataset'''
     phase_loader, val_loader = define_dataloader(phase_logger, opt) # val_loader is None if phase is test.
     networks = [define_network(phase_logger, opt, item_opt) for item_opt in opt['model']['which_networks']]
+    #print(networks)
 
     ''' set metrics, loss, optimizer and  schedulers '''
     metrics = [define_metric(phase_logger, item_opt) for item_opt in opt['model']['which_metrics']]
@@ -52,6 +54,8 @@ def main_worker(gpu, ngpus_per_node, opt):
         writer = phase_writer
     )
 
+    #return
+
     phase_logger.info('Begin model {}.'.format(opt['phase']))
     try:
         if opt['phase'] == 'train':
@@ -64,7 +68,7 @@ def main_worker(gpu, ngpus_per_node, opt):
         
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-c', '--config', type=str, default='config/colorization_mirflickr25k.json', help='JSON file for configuration')
+    parser.add_argument('-c', '--config', type=str, default='config/image_translation.json', help='JSON file for configuration')
     parser.add_argument('-p', '--phase', type=str, choices=['train','test'], help='Run train or test', default='train')
     parser.add_argument('-b', '--batch', type=int, default=None, help='Batch size in every gpu')
     parser.add_argument('-gpu', '--gpu_ids', type=str, default=None)
