@@ -68,8 +68,8 @@ class Palette(BaseModel):
     
     def get_current_visuals(self, phase='train'):
         dict = {
-            'gt_image': (self.gt_image.detach()[:].float().cpu()+1)/2,
-            'cond_image': (self.cond_image.detach()[:].float().cpu()+1)/2,
+            'gt_image': (self.gt_image.detach()[:, :, 10, :, :].float().cpu()+1)/2,
+            'cond_image': (self.cond_image.detach()[:, 0, 10, :, :].unsqueeze(1).float().cpu()+1)/2,
         }
         if self.task in ['inpainting','uncropping']:
             dict.update({
@@ -78,7 +78,7 @@ class Palette(BaseModel):
             })
         if phase != 'train':
             dict.update({
-                'output': (self.output.detach()[:].float().cpu()+1)/2
+                'output': (self.output.detach()[:, :, 10, :, :].float().cpu()+1)/2
             })
         return dict
 
@@ -158,7 +158,7 @@ class Palette(BaseModel):
                     self.writer.add_scalar(key, value)
                 for key, value in self.get_current_visuals(phase='val').items():
                     self.writer.add_images(key, value)
-                self.writer.save_images(self.save_current_results())
+                #self.writer.save_images(self.save_current_results())
 
         return self.val_metrics.result()
 

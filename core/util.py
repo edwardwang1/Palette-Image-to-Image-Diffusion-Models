@@ -60,7 +60,7 @@ def set_gpu(args, distributed=False, rank=0):
 		return DDP(args.cuda(), device_ids=[rank], output_device=rank, broadcast_buffers=True, find_unused_parameters=True)
 	else:
 		return args.cuda()
-		
+
 def set_device(args, distributed=False, rank=0):
 	""" set parameter to gpu or cpu """
 	if torch.cuda.is_available():

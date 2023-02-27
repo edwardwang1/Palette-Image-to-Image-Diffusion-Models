@@ -1,5 +1,5 @@
 {
-    "name": "colorization_mirflickr25k", // experiments name
+    "name": "3dTranslationTest", // experiments name
     "gpu_ids": [0], // gpu ids list, default is single 0
     "seed" : -1, // random seed, seed <0 represents randomization not used 
     "finetune_norm": false, // find the parameters to optimize
@@ -17,17 +17,17 @@
     "datasets": { // train or test
         "train": { 
             "which_dataset": {  // import designated dataset using arguments 
-                "name": ["data.dataset", "ColorizationDataset"], // import Dataset() class / function(not recommend) from data.dataset.py (default is [data.dataset.py])
+                "name": ["data.dataset", "TranslationDataset"], // import Dataset() class / function(not recommend) from data.dataset.py (default is [data.dataset.py])
                 "args":{ // arguments to initialize dataset
-                    "data_root": "datasets/mirflickr25k/images",
-                    "data_flist": "datasets/mirflickr25k/flist/train.flist",
+                    "data_root": "datasets/FakeVolumes/images",
+                    "data_flist": "datasets/FakeVolumes/flist/train.flist",
                     "data_len": -1
                 } 
             },
             "dataloader":{
-                "validation_split": 2, // percent or number 
+                "validation_split": 1, // percent or number
                 "args":{ // arguments to initialize train_dataloader
-                    "batch_size": 4, // batch size in each gpu
+                    "batch_size": 1, // batch size in each gpu
                     "num_workers": 4,
                     "shuffle": true,
                     "pin_memory": true,
@@ -44,15 +44,15 @@
         },
         "test": { 
             "which_dataset": {
-                "name": "ColorizationDataset", // import Dataset() class / function(not recommend) from default file
+                "name": "TranslationDataset", // import Dataset() class / function(not recommend) from default file
                 "args":{
-                    "data_root": "datasets/mirflickr25k/images",
-                    "data_flist": "datasets/mirflickr25k/flist/test.flist"
+                    "data_root": "datasets/FakeVolumes/images",
+                    "data_flist": "datasets/FakeVolumes/flist/test.flist"
                 }
             },
             "dataloader":{
                 "args":{
-                    "batch_size": 8,
+                    "batch_size": 1,
                     "num_workers": 4,
                     "pin_memory": true
                 }
@@ -83,8 +83,8 @@
                     "init_type": "kaiming", // method can be [normal | xavier| xavier_uniform | kaiming | orthogonal], default is kaiming
                     "module_name": "guided_diffusion", // sr3 | guided_diffusion
                     "unet": {
-                        "in_channel": 6,
-                        "out_channel": 3,
+                        "in_channel": 4,
+                        "out_channel": 1,
                         "inner_channel": 64,
                         "channel_mults": [
                             1,
@@ -105,7 +105,7 @@
                     "beta_schedule": {
                         "train": {
                             "schedule": "linear",
-                            "n_timestep": 2000,
+                            "n_timestep": 10, // 2000
                             // "n_timestep": 5, // debug
                             "linear_start": 1e-6,
                             "linear_end": 0.01
@@ -129,11 +129,11 @@
     },
 
     "train": { // arguments for basic training
-        "n_epoch": 10, // max epochs, not limited now
+        "n_epoch": 6, // max epochs, not limited now
         "n_iter": 1e8, // max interations
-        "val_epoch": 5, // valdation every specified number of epochs
-        "save_checkpoint_epoch": 10,
-        "log_iter": 1e4, // log every specified number of iterations
+        "val_epoch": 2, // valdation every specified number of epochs
+        "save_checkpoint_epoch": 1,
+        "log_iter": 50, // log every specified number of iterations
         "tensorboard" : true // tensorboardX enable
     },
     

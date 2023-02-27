@@ -12,10 +12,13 @@ class Network(BaseNetwork):
             from .sr3_modules.unet import UNet
         elif module_name == 'guided_diffusion':
             #from .guided_diffusion_modules.unet import UNet
-            from .guided_diffusion_modules.unet_3d import Generator
+            from .guided_diffusion_modules.unet_3d import UNet
+        else:
+            raise NotImplementedError(
+                'module_name [{:s}] not recognized.'.format(module_name))
         
         #self.denoise_fn = UNet(**unet)
-        self.denoise_fn = Generator(**unet)
+        self.denoise_fn = UNet(**unet)
         self.beta_schedule = beta_schedule
 
     def set_loss(self, loss_fn):
@@ -93,7 +96,8 @@ class Network(BaseNetwork):
         assert self.num_timesteps > sample_num, 'num_timesteps must greater than sample_num'
         sample_inter = (self.num_timesteps//sample_num)
         
-        y_t = default(y_t, lambda: torch.randn_like(y_cond))
+        #y_t = default(y_t, lambda: torch.randn_like(y_cond))
+        y_t = default(y_t, lambda: torch.zeros(y_cond.shape[0], 1, y_cond.shape[2], y_cond.shape[3], y_cond.shape[4])).to(y_cond.device)
         ret_arr = y_t
         for i in tqdm(reversed(range(0, self.num_timesteps)), desc='sampling loop time step', total=self.num_timesteps):
             t = torch.full((b,), i, device=y_cond.device, dtype=torch.long)

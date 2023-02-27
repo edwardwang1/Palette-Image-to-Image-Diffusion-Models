@@ -162,11 +162,11 @@ class ColorizationDataset(data.Dataset):
         ret = {}
         file_name = str(self.flist[index])#.zfill(5) + '.png'
 
-        #img = self.tfs(self.loader('{}/{}/{}'.format(self.data_root, 'color', file_name)))
-        #cond_image = self.tfs(self.loader('{}/{}/{}'.format(self.data_root, 'gray', file_name)))
+        img = self.tfs(self.loader('{}/{}/{}'.format(self.data_root, 'color', file_name)))
+        cond_image = self.tfs(self.loader('{}/{}/{}'.format(self.data_root, 'gray', file_name)))
 
-        img = self.tfs(self.loader('{}/{}'.format(self.data_root, file_name)))
-        cond_image = self.tfs(self.loader('{}/{}'.format(self.data_root, file_name)))
+        #img = self.tfs(self.loader('{}/{}'.format(self.data_root, file_name)))
+        #cond_image = self.tfs(self.loader('{}/{}'.format(self.data_root, file_name)))
 
         ret['gt_image'] = img
         ret['cond_image'] = cond_image
@@ -198,12 +198,27 @@ class TranslationDataset(data.Dataset):
         #img = self.tfs(self.loader('{}/{}/{}'.format(self.data_root, 'color', file_name)))
         #cond_image = self.tfs(self.loader('{}/{}/{}'.format(self.data_root, 'gray', file_name)))
 
-        img = np.load(os.path.join(self.volume_root, file_name))
+        img = np.load(os.path.join(self.volume_root, file_name)).astype(np.float32)
 
-        ret['gt_image'] = img[0]
-        ret['cond_image'] = img[1:3]
+
+        ret['gt_image'] = img[0][np.newaxis, ...]
+        ret['cond_image'] = img[1:]
         ret['path'] = file_name
         return ret
 
     def __len__(self):
         return len(self.flist)
+
+class RTDataset(data.Dataset):
+    def __init__(self, data_root, data_flist, data_len=-1):
+        self.volume_root = data_root
+        flist = make_dataset(data_flist)
+        if data_len > 0:
+            self.flist = flist[:int(data_len)]
+        else:
+            self.flist = flist
+        # self.tfs = transforms.Compose([
+        #         transforms.Resize((image_size[0], image_size[1])),
+        #         transforms.ToTensor(),
+        #         transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5,0.5, 0.5])
+        # ])
